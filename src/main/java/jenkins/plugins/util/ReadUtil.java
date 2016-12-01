@@ -19,15 +19,25 @@ public class ReadUtil {
     private static final Logger LOGGER = Logger.getLogger(ReadUtil.class.getName());
 
     public static Properties getJobProperties(Job job) {
+        FileInputStream fs = null;
         try {
             File rootDir = job.getRootDir();
             File file = new File(rootDir.getAbsolutePath() + File.separator + StoreUtil.BANGKOU_PROPERTIES);
+            fs = new FileInputStream(file);
             Properties properties = new Properties();
-            properties.load(new FileInputStream(file));
+            properties.load(fs);
             return properties;
         } catch (IOException e) {
             LOGGER.warning(String.format("get property file error : %s", e.getMessage()));
             return null;
+        } finally {
+            if (fs != null) {
+                try {
+                    fs.close();
+                } catch (IOException e) {
+                    LOGGER.warning(String.format("error while closing the stream: %s", e.getMessage()));
+                }
+            }
         }
     }
 
